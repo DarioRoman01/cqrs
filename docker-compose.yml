@@ -1,12 +1,24 @@
-version: '3.7'
+version: '3.9'
 
 services:
   postgres:
-    build: './database'
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=mydb
+    image: postgres:10.3
+    container_name: cqrs-db
     restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: mydb
+    volumes:
+      - ./database/initdb:/docker-entrypoint-initdb.d
     ports:
       - "54321:5432"
+    command: [ "postgres" ]
+  nats:
+    image: "nats-streaming:latest"
+    restart: always
+    container_name: cqrs-nats
+    ports:
+      - "4222:4222"
+      - "5222:5222"
+      - "6222:6222"
