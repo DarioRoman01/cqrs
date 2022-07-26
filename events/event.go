@@ -16,6 +16,18 @@ type EventStore interface {
 	SubscribeCreatedFeed(ctx context.Context) (<-chan *CreatedFeedMessage, error)
 	// OnCreatedFeed registers a handler for the created feed event
 	OnCreatedFeed(handler func(*CreatedFeedMessage)) error
+	// PublishUpdatedFeed publishes a new updated feed event
+	PublishUpdatedFeed(ctx context.Context, feed *models.Feed) error
+	// SubscribeUpdatedFeed subscribes to the updated feed event
+	SubscribeUpdatedFeed(ctx context.Context) (<-chan *UpdatedFeedMessage, error)
+	// OnUpdatedFeed registers a handler for the updated feed event
+	OnUpdatedFeed(handler func(*UpdatedFeedMessage)) error
+	// PublishDeletedFeed publishes a new deleted feed event
+	PublishDeletedFeed(ctx context.Context, feed *models.Feed) error
+	// SubscribeDeletedFeed subscribes to the deleted feed event
+	SubscribeDeletedFeed(ctx context.Context) (<-chan *DeletedFeedMessage, error)
+	// OnDeletedFeed registers a handler for the deleted feed event
+	OnDeletedFeed(handler func(*DeletedFeedMessage)) error
 }
 
 var eventStore EventStore
@@ -43,4 +55,34 @@ func SubscribeCreatedFeed(ctx context.Context) (<-chan *CreatedFeedMessage, erro
 // OnCreatedFeed registers a handler for the created feed event
 func OnCreatedFeed(handler func(*CreatedFeedMessage)) error {
 	return eventStore.OnCreatedFeed(handler)
+}
+
+//PublishUpdatedFeed publishes a new updated feed event
+func PublishUpdatedFeed(ctx context.Context, feed *models.Feed) error {
+	return eventStore.PublishUpdatedFeed(ctx, feed)
+}
+
+//SubscribeUpdatedFeed subscribes to the updated feed event
+func SubscribeUpdatedFeed(ctx context.Context) (<-chan *UpdatedFeedMessage, error) {
+	return eventStore.SubscribeUpdatedFeed(ctx)
+}
+
+// OnUpdatedFeed registers a handler for the updated feed event
+func OnUpdatedFeed(handler func(*UpdatedFeedMessage)) error {
+	return eventStore.OnUpdatedFeed(handler)
+}
+
+// PublishDeletedFeed publishes a new deleted feed event
+func PublishDeletedFeed(ctx context.Context, feed *models.Feed) error {
+	return eventStore.PublishDeletedFeed(ctx, feed)
+}
+
+//SubscribeDeletedFeed subscribes to the deleted feed event
+func SubscribeDeletedFeed(ctx context.Context) (<-chan *DeletedFeedMessage, error) {
+	return eventStore.SubscribeDeletedFeed(ctx)
+}
+
+// OnDeletedFeed registers a handler for the deleted feed event
+func OnDeletedFeed(handler func(*DeletedFeedMessage)) error {
+	return eventStore.OnDeletedFeed(handler)
 }

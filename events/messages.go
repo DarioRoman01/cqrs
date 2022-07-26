@@ -20,3 +20,27 @@ type CreatedFeedMessage struct {
 func (CreatedFeedMessage) Type() string {
 	return "created_feed"
 }
+
+// UpdatedFeedMessage is the message that is published when a feed is updated
+type UpdatedFeedMessage struct {
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+// Type returns the type of the message
+func (UpdatedFeedMessage) Type() string {
+	return "updated_feed"
+}
+
+// DeletedFeedMessage is the message that is published when a feed is deleted
+type DeletedFeedMessage struct {
+	ID        string    `json:"id"`
+	DeletedAt time.Time `json:"deleted_at"`
+}
+
+// Type returns the type of the message
+func (DeletedFeedMessage) Type() string {
+	return "deleted_feed"
+}
