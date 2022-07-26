@@ -22,3 +22,12 @@ services:
       - "4222:4222"
       - "5222:5222"
       - "6222:6222"
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:8.3.2"
+    restart: always
+    container_name: cqrs-elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "discovery.type=single-node"

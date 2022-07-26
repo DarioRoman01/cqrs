@@ -14,6 +14,8 @@ type SearchRepository interface {
 	IndexFeed(ctx context.Context, feed *models.Feed) error
 	// SearchFeeds searches for feeds
 	SearchFeed(ctx context.Context, query string) ([]*models.Feed, error)
+	// UpdateIndex updates the index
+	UpdateIndex(ctx context.Context, feed *models.Feed) error
 	// UnindexFeed unindexes a feed
 	UnIndexFeed(ctx context.Context, feed *models.Feed) error
 }
