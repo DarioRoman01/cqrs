@@ -28,6 +28,7 @@ func main() {
 		panic(fmt.Sprintf("failed to create nats event store: %s", err))
 	}
 
+	events.SetEventStore(eventStore)
 	err = events.OnCreatedFeed(func(msg *events.CreatedFeedMessage) {
 		hub.Broadcast(newCreatedFeedMessage(msg.ID, msg.Title, msg.Description, msg.CreatedAt, Create.String()), nil)
 	})
@@ -52,7 +53,6 @@ func main() {
 		panic(fmt.Sprintf("failed to subscribe to DeletedFeed event: %s", err))
 	}
 
-	events.SetEventStore(eventStore)
 	defer events.Close()
 	go hub.Run()
 

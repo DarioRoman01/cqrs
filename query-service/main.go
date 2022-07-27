@@ -41,7 +41,7 @@ func main() {
 		panic(fmt.Sprintf("failed to process env config: %s", err))
 	}
 
-	addr := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s?sslmode=disable", cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
+	addr := fmt.Sprintf("postgres://%s:%s@postgres/%s?sslmode=disable", cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
 	postgresRepo, err := database.NewPostgresRepository(addr)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create postgres repository: %s", err))

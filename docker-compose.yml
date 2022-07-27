@@ -31,9 +31,8 @@ services:
     depends_on:
       - postgres
       - nats
-      - elasticsearch
     ports:
-      - "8080:8080"
+      - "8080"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
@@ -48,7 +47,7 @@ services:
       - nats
       - elasticsearch
     ports:
-      - "8081:8081"
+      - "8080"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: mysecretpassword
@@ -62,6 +61,14 @@ services:
     depends_on:
       - nats
     ports:
-      - "8082:8082"
+      - "8080"
     environment:
-      ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+      NATS_ADDRESS: "nats:4222"
+  nginx:
+    build: "./nginx/"
+    ports:
+      - "8080:80"
+    depends_on:
+      - command
+      - query
+      - pusher

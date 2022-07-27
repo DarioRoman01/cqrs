@@ -119,18 +119,6 @@ func (e *ElasticSearchRepository) SearchFeed(ctx context.Context, query string) 
 			return nil, err
 		}
 
-		// var feed models.Feed
-		// source := hit.(map[string]interface{})["_source"]
-		// marshal, err := json.Marshal(source)
-		// if err != nil {
-		// 	return nil, err
-		// }
-
-		// if err := json.Unmarshal(marshal, &feed); err != nil {
-		// 	return nil, err
-		// }
-
-		// feeds = append(feeds, &feed)
 		feeds = append(feeds, &feed)
 	}
 
