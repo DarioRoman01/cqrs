@@ -55,3 +55,13 @@ services:
       POSTGRES_DB: mydb
       NATS_ADDRESS: "nats:4222"
       ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+  pusher:
+    container_name: cqrs-pusher
+    build: "."
+    command: "pusher-service"
+    depends_on:
+      - nats
+    ports:
+      - "8082:8082"
+    environment:
+      ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
