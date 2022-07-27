@@ -136,13 +136,6 @@ func (n *NatsEventStore) SubscribeCreatedFeed(ctx context.Context) (<-chan Creat
 			n.decodeMessage(m.Data, &msg)
 			n.feedCreatedChan <- msg
 		}
-		// for {
-		// 	select {
-		// 	case m := <-ch:
-		// 		n.decodeMessage(m.Data, &msg)
-		// 		n.feedCreatedChan <- msg
-		// 	}
-		// }
 	}()
 
 	return (<-chan CreatedFeedMessage)(n.feedCreatedChan), nil
@@ -197,13 +190,6 @@ func (n *NatsEventStore) SubscribeUpdatedFeed(ctx context.Context) (<-chan Updat
 			n.decodeMessage(m.Data, &msg)
 			n.feedUpdatedChan <- msg
 		}
-		// for {
-		// 	select {
-		// 	case m := <-ch:
-		// 		n.decodeMessage(m.Data, &msg)
-		// 		n.feedUpdatedChan <- msg
-		// 	}
-		// }
 	}()
 
 	return (<-chan UpdatedFeedMessage)(n.feedUpdatedChan), nil
@@ -257,13 +243,6 @@ func (n *NatsEventStore) SubscribeDeletedFeed(ctx context.Context) (<-chan Delet
 			n.decodeMessage(m.Data, &msg)
 			n.feedDeletedChan <- msg
 		}
-		// for {
-		// 	select {
-		// 	case m := <-ch:
-		// 		n.decodeMessage(m.Data, &msg)
-		// 		n.feedDeletedChan <- msg
-		// 	}
-		// }
 	}()
 
 	return (<-chan DeletedFeedMessage)(n.feedDeletedChan), nil
