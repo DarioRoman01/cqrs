@@ -32,7 +32,7 @@ func (r *PostgresRepository) Close() error {
 // Insert inserts a new feed into the repository
 func (r *PostgresRepository) Insert(ctx context.Context, feed *models.Feed) error {
 	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO feeds (id, title, description) VALUES ($1, $2, $3)",
+		"INSERT INTO feeds (id, title, description, created_at) VALUES ($1, $2, $3)",
 		feed.ID, feed.Title, feed.Description, feed.CreatedAt,
 	)
 

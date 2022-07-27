@@ -104,12 +104,12 @@ func (n *NatsEventStore) PublishCreatedFeed(ctx context.Context, feed *models.Fe
 }
 
 // OnCreatedFeed registers a handler for CreatedFeedMessage
-func (n *NatsEventStore) OnCreatedFeed(handler func(CreatedFeedMessage)) error {
+func (n *NatsEventStore) OnCreatedFeed(handler func(*CreatedFeedMessage)) error {
 	msg := CreatedFeedMessage{}
 	var err error
 	n.feedCreatedSub, err = n.conn.Subscribe(msg.Type(), func(m *nats.Msg) {
 		n.decodeMessage(m.Data, &msg)
-		handler(msg)
+		handler(&msg)
 	})
 
 	if err != nil {
@@ -165,12 +165,12 @@ func (n *NatsEventStore) PublishUpdatedFeed(ctx context.Context, feed *models.Fe
 }
 
 // OnUpdatedFeed registers a handler for UpdatedFeedMessage
-func (n *NatsEventStore) OnUpdatedFeed(handler func(UpdatedFeedMessage)) error {
+func (n *NatsEventStore) OnUpdatedFeed(handler func(*UpdatedFeedMessage)) error {
 	msg := UpdatedFeedMessage{}
 	var err error
 	n.feedCreatedSub, err = n.conn.Subscribe(msg.Type(), func(m *nats.Msg) {
 		n.decodeMessage(m.Data, &msg)
-		handler(msg)
+		handler(&msg)
 	})
 
 	if err != nil {
@@ -225,12 +225,12 @@ func (n *NatsEventStore) PublishDeletedFeed(ctx context.Context, feed *models.Fe
 }
 
 // OnDeletedFeed registers a handler for DeletedFeedMessage
-func (n *NatsEventStore) OnDeletedFeed(handler func(DeletedFeedMessage)) error {
+func (n *NatsEventStore) OnDeletedFeed(handler func(*DeletedFeedMessage)) error {
 	msg := DeletedFeedMessage{}
 	var err error
 	n.feedCreatedSub, err = n.conn.Subscribe(msg.Type(), func(m *nats.Msg) {
 		n.decodeMessage(m.Data, &msg)
-		handler(msg)
+		handler(&msg)
 	})
 
 	if err != nil {

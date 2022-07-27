@@ -46,3 +46,8 @@ func SearchFeed(ctx context.Context, query string) ([]*models.Feed, error) {
 func UnIndexFeed(ctx context.Context, feed *models.Feed) error {
 	return repo.UnIndexFeed(ctx, feed)
 }
+
+// UpdateIndex updates the index
+func UpdateIndex(ctx context.Context, feed *models.Feed) error {
+	return repo.UpdateIndex(ctx, feed)
+}
