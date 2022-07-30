@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/DarioRoman01/cqrs/cache"
 	"github.com/DarioRoman01/cqrs/database"
+	"github.com/DarioRoman01/cqrs/events"
 	"github.com/DarioRoman01/cqrs/repository"
 	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
@@ -19,6 +21,8 @@ type Config struct {
 	PostgresUser string `envconfig:"POSTGRES_USER"`
 	// PostgresPassword is the postgres password
 	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
+	// NATSAddress is the nats address
+	NatsAddress string `envconfig:"NATS_ADDRESS"`
 	// MemcacheAddress is the memcache address
 	MemCacheAddress string `envconfig:"MEMCACHE_ADDRESS"`
 }
@@ -50,6 +54,17 @@ func main() {
 	}
 
 	cache.SetCacheRepository(memcacheRepo)
+
+	natsRepo, err := events.NewNatsEventStore(cfg.NatsAddress)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create nats repository: %s", err))
+	}
+
+	events.SetEventStore(natsRepo)
+
+	if err := events.OnDeletedUser(onDeleteUser); err != nil {
+		log.Printf("failed to subscribe to user deleted event: %s", err)
+	}
 
 	defer memcacheRepo.Close()
 	defer userRepo.Close()

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/DarioRoman01/cqrs/cache"
 	"github.com/DarioRoman01/cqrs/database"
 	"github.com/DarioRoman01/cqrs/repository"
 	"github.com/gorilla/mux"
@@ -49,14 +48,7 @@ func main() {
 	}
 
 	repository.SetUserRepository(userRepo)
-	memcacheRepo, err := cache.NewCache(cfg.MemCacheAddress)
-	if err != nil {
-		panic(fmt.Sprintf("failed to create memcache repository: %s", err))
-	}
 
-	cache.SetCacheRepository(memcacheRepo)
-
-	defer memcacheRepo.Close()
 	defer userRepo.Close()
 
 	router := newRouter()

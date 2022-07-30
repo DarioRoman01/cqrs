@@ -1,16 +1,21 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 
-	"github.com/DarioRoman01/cqrs/cache"
 	"github.com/DarioRoman01/cqrs/helpers"
 	"github.com/DarioRoman01/cqrs/models"
 	"github.com/DarioRoman01/cqrs/repository"
 	"github.com/golang-jwt/jwt/v4"
 )
+
+type loginResponse struct {
+	Token string `json:"token"`
+}
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	var req models.SignupLoginRequest
@@ -21,6 +26,11 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := repository.Login(r.Context(), req.Name, req.Password)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "user not found", http.StatusNotFound)
+			return
+		}
+
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -43,25 +53,15 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := cache.Set(token, user); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(loginResponse{Token: token})
 }
 
 func logoutUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.Header.Get("Authorization")
 	if userID == "" {
 		http.Error(w, "user id not found", http.StatusUnauthorized)
-		return
-	}
-
-	if err := cache.Delete(userID); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

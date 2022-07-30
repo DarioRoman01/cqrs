@@ -7,9 +7,16 @@ import (
 	"net/http"
 
 	"github.com/DarioRoman01/cqrs/cache"
+	"github.com/DarioRoman01/cqrs/events"
 	"github.com/DarioRoman01/cqrs/repository"
 	"github.com/gorilla/mux"
 )
+
+func onDeleteUser(m *events.DeletedUserMessage) {
+	if err := cache.Delete("user_" + m.ID); err != nil {
+		log.Printf("error deleting user from cache: %v", err)
+	}
+}
 
 func listUsers(w http.ResponseWriter, r *http.Request) {
 	cachedUsers, err := cache.Get("users")

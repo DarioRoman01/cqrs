@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -27,6 +29,12 @@ func createFeedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	reqUserId := r.Context().Value("user_id").(string)
+	if reqUserId == "" {
+		http.Error(w, "you are not allow to create feed", http.StatusForbidden)
+		return
+	}
+
 	id, err := ksuid.NewRandom()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -37,6 +45,7 @@ func createFeedHandler(w http.ResponseWriter, r *http.Request) {
 		ID:          id.String(),
 		Title:       req.Title,
 		Description: req.Description,
+		UserID:      reqUserId,
 		CreatedAt:   time.Now().UTC(),
 	}
 
@@ -65,7 +74,18 @@ func deleteFeedHandler(w http.ResponseWriter, r *http.Request) {
 
 	feed, err := repository.GetFeed(r.Context(), id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	reqUserId := r.Context().Value("user_id").(string)
+	if feed.UserID != reqUserId {
+		http.Error(w, "you are not allowed to delete this feed", http.StatusForbidden)
 		return
 	}
 
@@ -93,7 +113,18 @@ func updateFeedHandler(w http.ResponseWriter, r *http.Request) {
 
 	feed, err := repository.GetFeed(r.Context(), req.ID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	reqUserId := r.Context().Value("user_id").(string)
+	if feed.UserID != reqUserId {
+		http.Error(w, "you are not allowed to delete this feed", http.StatusForbidden)
 		return
 	}
 
