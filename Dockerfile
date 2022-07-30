@@ -18,8 +18,9 @@ COPY repository repository
 COPY database database
 COPY cache cache
 COPY search search
-COPY command-service command-service
-COPY query-service query-service
+COPY feeds-command feeds-command
+COPY feeds-query feeds-query
+COPY auth-service auth-service
 COPY pusher-service pusher-service
 
 RUN go install ./...

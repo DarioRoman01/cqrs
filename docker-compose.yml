@@ -30,7 +30,7 @@ services:
     container_name: cqrs-memcached
     ports:
       - "11211"
-  command:
+  feedscommand:
     container_name: cqrs-command
     build: "."
     command: "command-service"
@@ -44,10 +44,40 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       NATS_ADDRESS: "nats:4222"
-  query:
+  feedsquery:
     container_name: cqrs-query
     build: "."
     command: "query-service"
+    depends_on:
+      - postgres
+      - nats
+      - elasticsearch
+    ports:
+      - "8080"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      NATS_ADDRESS: "nats:4222"
+      ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+  userscommand:
+    container_name: cqrs-users-command
+    build: "."
+    command: "users-command"
+    depends_on:
+      - postgres
+      - nats
+    ports:
+      - "8080"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      NATS_ADDRESS: "nats:4222"
+  usersquery:
+    container_name: cqrs-users-query
+    build: "."
+    command: "users-query"
     depends_on:
       - postgres
       - nats

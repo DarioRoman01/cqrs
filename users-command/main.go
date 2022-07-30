@@ -25,8 +25,7 @@ type Config struct {
 
 func newRouter() *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("auth/login", loginUser).Methods("POST")
-	router.HandleFunc("auth/logout", logoutUser).Methods("GET")
+	router.HandleFunc("/users/register", register).Methods("POST")
 	return router
 }
 

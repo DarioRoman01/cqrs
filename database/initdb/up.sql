@@ -4,7 +4,9 @@ CREATE TABLE feeds (
     id VARCHAR(32) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
+    user_id VARCHAR(32) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE users (

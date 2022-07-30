@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/DarioRoman01/cqrs/cache"
 	"github.com/DarioRoman01/cqrs/database"
-	"github.com/DarioRoman01/cqrs/events"
 	"github.com/DarioRoman01/cqrs/repository"
 	"github.com/gorilla/mux"
 	"github.com/kelseyhightower/envconfig"
@@ -19,16 +19,14 @@ type Config struct {
 	PostgresUser string `envconfig:"POSTGRES_USER"`
 	// PostgresPassword is the postgres password
 	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
-	// NatsAddress is the nats address
-	NatsAddress string `envconfig:"NATS_ADDRESS"`
+	// MemcacheAddress is the memcache address
+	MemCacheAddress string `envconfig:"MEMCACHE_ADDRESS"`
 }
 
-// newRouter creates a new router
 func newRouter() *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("/feeds/create", createFeedHandler).Methods("POST")
-	router.HandleFunc("/feeds/update", updateFeedHandler).Methods("PUT")
-	router.HandleFunc("/feeds/{id}", deleteFeedHandler).Methods("DELETE")
+	router.HandleFunc("/users", listUsers).Methods("GET")
+	router.HandleFunc("/users/{id}", getUser).Methods("GET")
 	return router
 }
 
@@ -40,20 +38,21 @@ func main() {
 	}
 
 	addr := fmt.Sprintf("postgres://%s:%s@postgres/%s?sslmode=disable", cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
-	postgresRepo, err := database.NewFeedRepository(addr)
+	userRepo, err := database.NewUserRepository(addr)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create postgres repository: %s", err))
 	}
 
-	repository.SetFeedRepository(postgresRepo)
-	eventStore, err := events.NewNatsEventStore(fmt.Sprintf("nats://%s", cfg.NatsAddress))
+	repository.SetUserRepository(userRepo)
+	memcacheRepo, err := cache.NewCache(cfg.MemCacheAddress)
 	if err != nil {
-		panic(fmt.Sprintf("failed to create nats event store: %s", err))
+		panic(fmt.Sprintf("failed to create memcache repository: %s", err))
 	}
 
-	events.SetEventStore(eventStore)
-	defer events.Close()
-	defer repository.CloseFeedRepo()
+	cache.SetCacheRepository(memcacheRepo)
+
+	defer memcacheRepo.Close()
+	defer userRepo.Close()
 
 	router := newRouter()
 	if err := http.ListenAndServe(":8080", router); err != nil {
