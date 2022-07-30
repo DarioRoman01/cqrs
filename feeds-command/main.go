@@ -22,12 +22,14 @@ type Config struct {
 	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
 	// NatsAddress is the nats address
 	NatsAddress string `envconfig:"NATS_ADDRESS"`
+	// JWTSecret is the jwt secret
+	JWTSecret string `envconfig:"JWT_SECRET"`
 }
 
 // newRouter creates a new router
-func newRouter() *mux.Router {
+func newRouter(cfg Config) *mux.Router {
 	router := mux.NewRouter()
-	router.Use(middlewares.CheckAuthMiddleware)
+	router.Use(middlewares.CheckAuthMiddleware(cfg.JWTSecret))
 	router.HandleFunc("/feeds/create", createFeedHandler).Methods("POST")
 	router.HandleFunc("/feeds/update", updateFeedHandler).Methods("PUT")
 	router.HandleFunc("/feeds/{id}", deleteFeedHandler).Methods("DELETE")
@@ -57,7 +59,7 @@ func main() {
 	defer events.Close()
 	defer repository.CloseFeedRepo()
 
-	router := newRouter()
+	router := newRouter(cfg)
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		panic(fmt.Sprintf("failed to start server: %s", err))
 	}

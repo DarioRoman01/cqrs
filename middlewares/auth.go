@@ -1,9 +1,13 @@
 package middlewares
 
 import (
-	"encoding/json"
+	"context"
 	"net/http"
 	"strings"
+
+	"github.com/DarioRoman01/cqrs/models"
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/gorilla/mux"
 )
 
 var (
@@ -22,20 +26,26 @@ func shoulCheckToken(route string) bool {
 	return true
 }
 
-func CheckAuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !shoulCheckToken(r.URL.Path) {
-			next.ServeHTTP(w, r)
-			return
-		}
+func CheckAuthMiddleware(secret string) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !shoulCheckToken(r.URL.Path) {
+				next.ServeHTTP(w, r)
+				return
+			}
 
-		userID := r.Header.Get("Authorization")
-		if userID == "" {
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(map[string]string{"message": "you are not logged in"})
-			return
-		}
+			claims := &models.Claims{}
+			tokenString := strings.TrimSpace(r.Header.Get("Authorization"))
+			_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+				return []byte(secret), nil
+			})
 
-		next.ServeHTTP(w, r)
-	})
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusUnauthorized)
+				return
+			}
+
+			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", claims.UserID)))
+		})
+	}
 }

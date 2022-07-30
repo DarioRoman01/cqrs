@@ -21,6 +21,8 @@ type Config struct {
 	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
 	// MemcacheAddress is the memcache address
 	MemCacheAddress string `envconfig:"MEMCACHE_ADDRESS"`
+	// JWT_SECRET is the jwt secret
+	JWTSecret string `envconfig:"JWT_SECRET"`
 }
 
 func newRouter() *mux.Router {
@@ -30,13 +32,16 @@ func newRouter() *mux.Router {
 	return router
 }
 
-func main() {
-	var cfg Config
+var cfg Config
+
+func init() {
 	err := envconfig.Process("", &cfg)
 	if err != nil {
 		panic(fmt.Sprintf("failed to process env config: %s", err))
 	}
+}
 
+func main() {
 	addr := fmt.Sprintf("postgres://%s:%s@postgres/%s?sslmode=disable", cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
 	userRepo, err := database.NewUserRepository(addr)
 	if err != nil {

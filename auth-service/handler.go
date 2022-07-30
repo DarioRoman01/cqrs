@@ -3,11 +3,13 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/DarioRoman01/cqrs/cache"
 	"github.com/DarioRoman01/cqrs/helpers"
 	"github.com/DarioRoman01/cqrs/models"
 	"github.com/DarioRoman01/cqrs/repository"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 func loginUser(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +30,20 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := cache.Set(user.ID, user); err != nil {
+	claims := &models.Claims{
+		UserID: user.ID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 2)),
+		},
+	}
+
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(cfg.JWTSecret)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := cache.Set(token, user); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
