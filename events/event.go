@@ -28,6 +28,12 @@ type EventStore interface {
 	SubscribeDeletedFeed(ctx context.Context) (<-chan DeletedFeedMessage, error)
 	// OnDeletedFeed registers a handler for the deleted feed event
 	OnDeletedFeed(handler func(*DeletedFeedMessage)) error
+	// PublishDeletedUser publishes a new deleted user event
+	PublishDeletedUser(ctx context.Context, user *models.User) error
+	// SubscribeDeletedUser subscribes to the deleted user event
+	SubscribeDeletedUser(ctx context.Context) (<-chan DeletedUserMessage, error)
+	// OnDeletedUser registers a handler for the deleted user event
+	OnDeletedUser(handler func(*DeletedUserMessage)) error
 }
 
 var eventStore EventStore
@@ -85,4 +91,16 @@ func SubscribeDeletedFeed(ctx context.Context) (<-chan DeletedFeedMessage, error
 // OnDeletedFeed registers a handler for the deleted feed event
 func OnDeletedFeed(handler func(*DeletedFeedMessage)) error {
 	return eventStore.OnDeletedFeed(handler)
+}
+
+func PublishDeletedUser(ctx context.Context, user *models.User) error {
+	return eventStore.PublishDeletedUser(ctx, user)
+}
+
+func SubscribeDeletedUser(ctx context.Context) (<-chan DeletedUserMessage, error) {
+	return eventStore.SubscribeDeletedUser(ctx)
+}
+
+func OnDeletedUser(handler func(*DeletedUserMessage)) error {
+	return eventStore.OnDeletedUser(handler)
 }

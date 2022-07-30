@@ -12,6 +12,8 @@ type Feed struct {
 	Title string `json:"title"`
 	// description is the description of the feed
 	Description string `json:"description"`
+	// UserID is the ID of the user that owns the feed
+	UserID string `json:"user_id"`
 	// CreatedAt is the date the feed was created
 	CreatedAt time.Time `json:"created_at"`
 }

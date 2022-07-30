@@ -13,6 +13,7 @@ type CreatedFeedMessage struct {
 	ID          string    `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
+	UserID      string    `json:"user_id"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
@@ -43,4 +44,13 @@ type DeletedFeedMessage struct {
 // Type returns the type of the message
 func (DeletedFeedMessage) Type() string {
 	return "deleted_feed"
+}
+
+type DeletedUserMessage struct {
+	ID        string    `json:"id"`
+	DeletedAt time.Time `json:"deleted_at"`
+}
+
+func (DeletedUserMessage) Type() string {
+	return "deleted_user"
 }

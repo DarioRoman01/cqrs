@@ -28,6 +28,7 @@ type CreatedFeedMessage struct {
 	ID          string    `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
+	UserID      string    `json:"user_id"`
 	CreatedAt   time.Time `json:"created_at"`
 	Type        string    `json:"type"`
 }
@@ -48,11 +49,12 @@ type DeletedFeedMessage struct {
 }
 
 // newCreatedFeedMessage creates a new CreatedFeedMessage
-func newCreatedFeedMessage(id, title, description string, createdAt time.Time, t string) *CreatedFeedMessage {
+func newCreatedFeedMessage(id, title, description, userId string, createdAt time.Time, t string) *CreatedFeedMessage {
 	return &CreatedFeedMessage{
 		ID:          id,
 		Title:       title,
 		Description: description,
+		UserID:      userId,
 		CreatedAt:   createdAt,
 		Type:        t,
 	}

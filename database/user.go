@@ -82,7 +82,7 @@ func (r *UserRepository) Delete(ctx context.Context, id string) error {
 }
 
 func (r *UserRepository) Login(ctx context.Context, name, password string) (*models.User, error) {
-	row := r.db.QueryRowContext(ctx, "SELECT * FROM users WHERE name = $1", password)
+	row := r.db.QueryRowContext(ctx, "SELECT * FROM users WHERE name = $1", name)
 
 	var user models.User
 	if err := row.Scan(&user.ID, &user.Name, &user.Password, &user.CreatedAt); err != nil {

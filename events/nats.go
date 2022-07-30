@@ -20,6 +20,10 @@ type NatsEventStore struct {
 	feedUpdatedSub *nats.Subscription
 	// feedDeletedSubject is the subject used to publish DeletedFeedMessage
 	feedDeletedSub *nats.Subscription
+	// userDeleteSubject is the subject used to publish DeletedUserMessage
+	userDeletedSub *nats.Subscription
+	// userDeleteChan is the channel used to receive DeletedUserMessage
+	userDeletedChan chan DeletedUserMessage
 	// feedCreatedChan is the channel used to receive CreatedFeedMessage
 	feedCreatedChan chan CreatedFeedMessage
 	// feedUpdatedChan is the channel used to receive UpdatedFeedMessage
@@ -92,6 +96,7 @@ func (n *NatsEventStore) PublishCreatedFeed(ctx context.Context, feed *models.Fe
 		ID:          feed.ID,
 		Title:       feed.Title,
 		Description: feed.Description,
+		UserID:      feed.UserID,
 		CreatedAt:   feed.CreatedAt,
 	}
 
@@ -246,4 +251,57 @@ func (n *NatsEventStore) SubscribeDeletedFeed(ctx context.Context) (<-chan Delet
 	}()
 
 	return (<-chan DeletedFeedMessage)(n.feedDeletedChan), nil
+}
+
+// PublishDeletedUser publishes a DeletedUserMessage
+func (n *NatsEventStore) PublishDeletedUser(ctx context.Context, user *models.User) error {
+	msg := DeletedUserMessage{
+		ID:        user.ID,
+		DeletedAt: time.Now(),
+	}
+
+	data, err := n.encodeMessage(msg)
+	if err != nil {
+		return err
+	}
+
+	return n.conn.Publish(msg.Type(), data)
+}
+
+// SubscribeDeletedUser subscribes to the DeletedUserMessage subject
+func (n *NatsEventStore) SubscribeDeletedUser(ctx context.Context) (<-chan DeletedUserMessage, error) {
+	msg := DeletedUserMessage{}
+	n.userDeletedChan = make(chan DeletedUserMessage, 64)
+	ch := make(chan *nats.Msg, 64)
+	var err error
+
+	n.userDeletedSub, err = n.conn.ChanSubscribe(msg.Type(), ch)
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		for m := range ch {
+			n.decodeMessage(m.Data, &msg)
+			n.userDeletedChan <- msg
+		}
+	}()
+
+	return (<-chan DeletedUserMessage)(n.userDeletedChan), nil
+}
+
+// OnDeletedUser registers a handler for DeletedUserMessage
+func (n *NatsEventStore) OnDeletedUser(handler func(*DeletedUserMessage)) error {
+	msg := DeletedUserMessage{}
+	var err error
+	n.userDeletedSub, err = n.conn.Subscribe(msg.Type(), func(m *nats.Msg) {
+		n.decodeMessage(m.Data, &msg)
+		handler(&msg)
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

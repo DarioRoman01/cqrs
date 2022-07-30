@@ -30,7 +30,7 @@ func main() {
 
 	events.SetEventStore(eventStore)
 	err = events.OnCreatedFeed(func(msg *events.CreatedFeedMessage) {
-		hub.Broadcast(newCreatedFeedMessage(msg.ID, msg.Title, msg.Description, msg.CreatedAt, Create.String()), nil)
+		hub.Broadcast(newCreatedFeedMessage(msg.ID, msg.Title, msg.Description, msg.UserID, msg.CreatedAt, Create.String()), nil)
 	})
 
 	if err != nil {
