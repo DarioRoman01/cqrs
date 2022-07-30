@@ -6,9 +6,9 @@ services:
     container_name: cqrs-db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: mydb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ./database/initdb:/docker-entrypoint-initdb.d
 
@@ -30,9 +30,6 @@ services:
     container_name: cqrs-memcached
     ports:
       - "11211"
-    environment:
-      - "MEMCACHED_USER=memcached"
-      - "MEMCACHED_PASSWORD=memcached"
   command:
     container_name: cqrs-command
     build: "."
@@ -43,9 +40,9 @@ services:
     ports:
       - "8080"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: mydb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       NATS_ADDRESS: "nats:4222"
   query:
     container_name: cqrs-query
@@ -58,9 +55,9 @@ services:
     ports:
       - "8080"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: mydb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
       NATS_ADDRESS: "nats:4222"
       ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
   pusher:
@@ -73,6 +70,23 @@ services:
       - "8080"
     environment:
       NATS_ADDRESS: "nats:4222"
+  auth:
+    container_name: cqrs-auth
+    build: "."
+    command: "auth-service"
+    depends_on:
+      - postgres
+      - nats
+      - memcached
+    ports:
+      - "8080"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      NATS_ADDRESS: "nats:4222"
+      MEMCACHED_ADDRESS: "memcached:11211"
+      JWT_SECRET: ${JWT_SECRET}
   nginx:
     build: "./nginx/"
     ports:
@@ -81,3 +95,4 @@ services:
       - command
       - query
       - pusher
+      - auth

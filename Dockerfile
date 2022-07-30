@@ -16,6 +16,7 @@ COPY models models
 COPY events events
 COPY repository repository
 COPY database database
+COPY cache cache
 COPY search search
 COPY command-service command-service
 COPY query-service query-service
