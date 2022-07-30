@@ -17,6 +17,15 @@ type PasswordConfig struct {
 	KeyLen  uint32
 }
 
+func GetPasswordConfig() *PasswordConfig {
+	return &PasswordConfig{
+		Time:    1,
+		Memory:  64 * 1024,
+		Threads: 4,
+		KeyLen:  32,
+	}
+}
+
 // Generate hash from given password
 func GeneratePassword(c *PasswordConfig, passwd string) (string, error) {
 	salt := make([]byte, 16)
