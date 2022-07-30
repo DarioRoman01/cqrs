@@ -24,6 +24,15 @@ services:
     container_name: cqrs-elasticsearch
     environment:
       - "discovery.type=single-node"
+  memcached:
+    image: memcached:alpine3.16
+    restart: always
+    container_name: cqrs-memcached
+    ports:
+      - "11211"
+    environment:
+      - "MEMCACHED_USER=memcached"
+      - "MEMCACHED_PASSWORD=memcached"
   command:
     container_name: cqrs-command
     build: "."

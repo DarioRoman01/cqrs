@@ -5,6 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/DarioRoman01/cqrs/models"
+	_ "github.com/lib/pq"
 )
 
 // UserRepository is a struct that implements the Repository interface

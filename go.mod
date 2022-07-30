@@ -5,6 +5,7 @@ go 1.18
 require github.com/lib/pq v1.10.6
 
 require (
+	github.com/bradfitz/gomemcache v0.0.0-20220106215444-fb4bf637b56d // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.0.0-20211216131617-bbee439d559c // indirect
 	github.com/elastic/go-elasticsearch/v8 v8.3.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
