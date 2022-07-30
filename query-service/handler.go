@@ -54,7 +54,7 @@ func onUpdatedFeed(msg *events.UpdatedFeedMessage) {
 
 // listFeedHandler manage the request to list all the feeds
 func listFeedsHandler(w http.ResponseWriter, r *http.Request) {
-	feeds, err := repository.List(r.Context())
+	feeds, err := repository.ListFeeds(r.Context())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -93,7 +93,7 @@ func getFeedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	feed, err := repository.Get(r.Context(), id)
+	feed, err := repository.GetFeed(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

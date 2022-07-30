@@ -40,7 +40,7 @@ func main() {
 	}
 
 	addr := fmt.Sprintf("postgres://%s:%s@postgres/%s?sslmode=disable", cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
-	postgresRepo, err := database.NewPostgresRepository(addr)
+	postgresRepo, err := database.NewFeedRepository(addr)
 	if err != nil {
 		panic(fmt.Sprintf("failed to create postgres repository: %s", err))
 	}
@@ -53,7 +53,7 @@ func main() {
 
 	events.SetEventStore(eventStore)
 	defer events.Close()
-	defer repository.Close()
+	defer repository.CloseFeedRepo()
 
 	router := newRouter()
 	if err := http.ListenAndServe(":8080", router); err != nil {

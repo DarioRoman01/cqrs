@@ -8,29 +8,29 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// PostgresRepository is a struct that implements the Repository interface
-type PostgresRepository struct {
+// FeedRepository is a struct that implements the Repository interface
+type FeedRepository struct {
 	// db is the database connection
 	db *sql.DB
 }
 
-// NewPostgresRepository creates a new PostgresRepository
-func NewPostgresRepository(url string) (*PostgresRepository, error) {
+// NewFeedRepository creates a new FeedRepository
+func NewFeedRepository(url string) (*FeedRepository, error) {
 	db, err := sql.Open("postgres", url)
 	if err != nil {
 		return nil, err
 	}
 
-	return &PostgresRepository{db: db}, nil
+	return &FeedRepository{db: db}, nil
 }
 
 // Close closes the repository connection to the database
-func (r *PostgresRepository) Close() error {
+func (r *FeedRepository) Close() error {
 	return r.db.Close()
 }
 
 // Insert inserts a new feed into the repository
-func (r *PostgresRepository) Insert(ctx context.Context, feed *models.Feed) error {
+func (r *FeedRepository) Insert(ctx context.Context, feed *models.Feed) error {
 	_, err := r.db.ExecContext(ctx,
 		"INSERT INTO feeds (id, title, description, created_at) VALUES ($1, $2, $3, $4)",
 		feed.ID, feed.Title, feed.Description, feed.CreatedAt,
@@ -40,7 +40,7 @@ func (r *PostgresRepository) Insert(ctx context.Context, feed *models.Feed) erro
 }
 
 // List returns all feeds in the repository
-func (r *PostgresRepository) List(ctx context.Context) ([]*models.Feed, error) {
+func (r *FeedRepository) List(ctx context.Context) ([]*models.Feed, error) {
 	rows, err := r.db.QueryContext(ctx, "SELECT * FROM feeds")
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (r *PostgresRepository) List(ctx context.Context) ([]*models.Feed, error) {
 }
 
 // Get returns a feed from the repository by id
-func (r *PostgresRepository) Get(ctx context.Context, id string) (*models.Feed, error) {
+func (r *FeedRepository) Get(ctx context.Context, id string) (*models.Feed, error) {
 	var feed models.Feed
 	err := r.db.QueryRowContext(ctx, "SELECT * FROM feeds WHERE id = $1", id).Scan(&feed.ID, &feed.Title, &feed.Description, &feed.CreatedAt)
 	if err != nil {
@@ -73,13 +73,13 @@ func (r *PostgresRepository) Get(ctx context.Context, id string) (*models.Feed, 
 }
 
 // Delete deletes a feed from the repository by id
-func (r *PostgresRepository) Delete(ctx context.Context, id string) error {
+func (r *FeedRepository) Delete(ctx context.Context, id string) error {
 	_, err := r.db.ExecContext(ctx, "DELETE FROM feeds WHERE id = $1", id)
 	return err
 }
 
 // Update updates a feed in the repository
-func (r *PostgresRepository) Update(ctx context.Context, feed *models.Feed) error {
+func (r *FeedRepository) Update(ctx context.Context, feed *models.Feed) error {
 	_, err := r.db.ExecContext(ctx,
 		"UPDATE feeds SET title = $1, description = $2 WHERE id = $3",
 		feed.Title, feed.Description, feed.ID,

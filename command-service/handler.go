@@ -40,7 +40,7 @@ func createFeedHandler(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:   time.Now().UTC(),
 	}
 
-	if err := repository.Insert(r.Context(), feed); err != nil {
+	if err := repository.InsertFeed(r.Context(), feed); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -63,13 +63,13 @@ func deleteFeedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	feed, err := repository.Get(r.Context(), id)
+	feed, err := repository.GetFeed(r.Context(), id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if err := repository.Delete(r.Context(), id); err != nil {
+	if err := repository.DeleteFeed(r.Context(), id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -91,7 +91,7 @@ func updateFeedHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	feed, err := repository.Get(r.Context(), req.ID)
+	feed, err := repository.GetFeed(r.Context(), req.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -100,7 +100,7 @@ func updateFeedHandler(w http.ResponseWriter, r *http.Request) {
 	feed.Title = req.Title
 	feed.Description = req.Description
 
-	if err := repository.Update(r.Context(), feed); err != nil {
+	if err := repository.UpdateFeed(r.Context(), feed); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
