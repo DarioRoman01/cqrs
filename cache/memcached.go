@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/bradfitz/gomemcache/memcache"
@@ -33,7 +32,7 @@ func (c *Cache) Close() error {
 	return nil
 }
 
-func (c *Cache) Get(ctx context.Context, id string) (interface{}, error) {
+func (c *Cache) Get(id string) (interface{}, error) {
 	cachedItem, err := c.client.Get(id)
 	if err == nil {
 		if cachedItem.Value != nil {
@@ -44,7 +43,7 @@ func (c *Cache) Get(ctx context.Context, id string) (interface{}, error) {
 	return nil, nil
 }
 
-func (c *Cache) Set(ctx context.Context, id string, value interface{}) error {
+func (c *Cache) Set(id string, value interface{}) error {
 	data, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -56,6 +55,6 @@ func (c *Cache) Set(ctx context.Context, id string, value interface{}) error {
 	})
 }
 
-func (c *Cache) Delete(ctx context.Context, id string) error {
+func (c *Cache) Delete(id string) error {
 	return c.client.Delete(id)
 }
