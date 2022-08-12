@@ -30,11 +30,27 @@ spec:
             - name: ELASTICSEARCH_ADDRESS
               value: elasticsearch:9200
             - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: JWT_SECRET
             - name: NATS_ADDRESS
               value: nats:4222
             - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: POSTGRES_DB
             - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: POSTGRES_USER
           image: feedsquery
           name: cqrs-query
           ports:

@@ -29,7 +29,7 @@ spec:
           env:
             - name: NATS_ADDRESS
               value: nats:4222
-          image: pusher
+          image: registry.digitalocean.com/shawarma/cqrs
           name: cqrs-pusher
           ports:
             - containerPort: 8080

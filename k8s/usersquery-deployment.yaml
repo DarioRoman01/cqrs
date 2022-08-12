@@ -28,14 +28,30 @@ spec:
             - users-query
           env:
             - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: JWT_SECRET
             - name: MEMCACHED_ADDRESS
               value: memcached:11211
             - name: NATS_ADDRESS
               value: nats:4222
             - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: POSTGRES_DB
             - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
-          image: usersquery
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: POSTGRES_USER
+          image: registry.digitalocean.com/shawarma/cqrs
           name: cqrs-users-query
           ports:
             - containerPort: 8080
