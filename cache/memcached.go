@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/bradfitz/gomemcache/memcache"
@@ -19,12 +20,12 @@ func NewCache(url string) (*Cache, error) {
 	return &Cache{client: client}, nil
 }
 
-func (c *Cache) fromJson(data []byte) (interface{}, error) {
+func (c *Cache) decodeData(data []byte) (interface{}, error) {
 	var out interface{}
-	err := json.Unmarshal(data, &out)
-	if err != nil {
+	if err := json.NewDecoder(bytes.NewReader(data)).Decode(&out); err != nil {
 		return nil, err
 	}
+
 	return out, nil
 }
 
@@ -36,7 +37,7 @@ func (c *Cache) Get(id string) (interface{}, error) {
 	cachedItem, err := c.client.Get(id)
 	if err == nil {
 		if cachedItem.Value != nil {
-			return c.fromJson(cachedItem.Value)
+			return c.decodeData(cachedItem.Value)
 		}
 	}
 
@@ -44,14 +45,15 @@ func (c *Cache) Get(id string) (interface{}, error) {
 }
 
 func (c *Cache) Set(id string, value interface{}) error {
-	data, err := json.Marshal(value)
+	var buff bytes.Buffer
+	err := json.NewEncoder(&buff).Encode(value)
 	if err != nil {
 		return err
 	}
 
 	return c.client.Set(&memcache.Item{
 		Key:   id,
-		Value: data,
+		Value: buff.Bytes(),
 	})
 }
 

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pusher
+  name: pusher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: pusher
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: pusher
+    spec:
+      containers:
+        - args:
+            - pusher-service
+          env:
+            - name: NATS_ADDRESS
+              value: nats:4222
+          image: pusher
+          name: cqrs-pusher
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+status: {}

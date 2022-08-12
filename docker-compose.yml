@@ -1,10 +1,12 @@
-version: '3.9'
+version: '3'
 
 services:
   postgres:
     image: postgres:10.3
     container_name: cqrs-db
     restart: always
+    ports:
+      - '5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -16,11 +18,15 @@ services:
   nats:
     image: "nats-streaming:latest"
     restart: always
+    ports:
+      - "4222"
     container_name: cqrs-nats
 
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:8.3.2"
     restart: always
+    ports:
+      - "9200"
     container_name: cqrs-elasticsearch
     environment:
       - "discovery.type=single-node"
@@ -131,7 +137,7 @@ services:
     depends_on:
       - feedscommand
       - userscommand
-      - usersquery
+      - feedsquery
       - usersquery
       - pusher
       - auth

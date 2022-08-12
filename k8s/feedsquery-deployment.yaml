@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: feedsquery
+  name: feedsquery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: feedsquery
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: feedsquery
+    spec:
+      containers:
+        - args:
+            - query-service
+          env:
+            - name: ELASTICSEARCH_ADDRESS
+              value: elasticsearch:9200
+            - name: JWT_SECRET
+            - name: NATS_ADDRESS
+              value: nats:4222
+            - name: POSTGRES_DB
+            - name: POSTGRES_PASSWORD
+            - name: POSTGRES_USER
+          image: feedsquery
+          name: cqrs-query
+          ports:
+            - containerPort: 8080
+          resources: {}
+      restartPolicy: Always
+status: {}

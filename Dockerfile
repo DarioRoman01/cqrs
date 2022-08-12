@@ -18,10 +18,14 @@ COPY repository repository
 COPY database database
 COPY cache cache
 COPY search search
+COPY helpers helpers
+COPY middlewares middlewares
+COPY pusher-service pusher-service
 COPY feeds-command feeds-command
 COPY feeds-query feeds-query
+COPY users-command users-command
+COPY users-query users-query
 COPY auth-service auth-service
-COPY pusher-service pusher-service
 
 RUN go install ./...
 
